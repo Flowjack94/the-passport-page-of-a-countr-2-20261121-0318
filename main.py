@@ -34,8 +34,12 @@ def main():
         )
     if data[:8] != b"\x89PNG\r\n\x1a\n":
         raise SystemExit("entry.png is not a PNG file")
+    if data[12:16] != b"IHDR":
+        raise SystemExit("entry.png has no IHDR chunk")
     width = int.from_bytes(data[16:20], "big")
     height = int.from_bytes(data[20:24], "big")
+    if width == 0 or height == 0:
+        raise SystemExit("entry.png has a zero dimension")
     if width > MAX_DIM or height > MAX_DIM:
         raise SystemExit(
             "entry.png is %dx%d, over the 1024x1024 limit" % (width, height)
